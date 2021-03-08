@@ -126,6 +126,16 @@ function dkan_sitewide_block_view($delta = '') {
 }
 
 /**
+ * Simple function to get the uri of a remote file from the node and then get the file size
+ */
+function remote_filesize($node){
+  $uri = $node->field_link_remote_file['und'][0]['uri'];
+  $filesize = get_remote_filesize($uri, $useHead = true);
+  $filesize = format_size($filesize);
+  return $filesize;
+}
+
+/**
  * Creates "Additional" block for resources.
  *
  * TODO: Make this a faux field as well attached to resource node.
@@ -141,7 +151,8 @@ function dkan_sitewide_resource_additional_block($nid = '') {
     $upload = !$upload && isset($node->field_upload['und'][0]) ? $node->field_upload['und'][0] : $upload;
 
     if (($file = $link) || ($file = $upload)) {
-      $filesize = isset($node->field_link_remote_file[$lang][0]) ? 'unknown' : format_size($file['filesize']);
+      //$filesize = isset($node->field_link_remote_file[$lang][0]) ? 'unknown' : format_size($file['filesize']);
+      $filesize = isset($node->field_link_remote_file[$lang][0]) ? remote_filesize($node) : format_size($file['filesize']); // change unknown with the real file size
       $file_info[] = array(t('mimetype'), $file['filemime']);
       $file_info[] = array(t('filesize'), $filesize);
       $file_info[] = array(t('resource type'), 'file upload');
